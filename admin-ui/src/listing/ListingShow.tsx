@@ -13,7 +13,6 @@ export const ListingShow = (props: ShowProps): React.ReactElement => {
       <SimpleShowLayout>
         <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
-        <TextField label="locationType" source="locationType" />
         <DateField source="updatedAt" label="Updated At" />
       </SimpleShowLayout>
     </Show>

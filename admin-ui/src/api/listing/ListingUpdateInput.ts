@@ -1,3 +1,1 @@
-export type ListingUpdateInput = {
-  locationType?: string;
-};
+export type ListingUpdateInput = {};

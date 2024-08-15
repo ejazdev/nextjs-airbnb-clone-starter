@@ -27,17 +27,6 @@ class ListingWhereInput {
     nullable: true,
   })
   id?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  locationType?: StringFilter;
 }
 
 export { ListingWhereInput as ListingWhereInput };

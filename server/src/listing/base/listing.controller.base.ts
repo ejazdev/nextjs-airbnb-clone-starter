@@ -53,7 +53,6 @@ export class ListingControllerBase {
       select: {
         createdAt: true,
         id: true,
-        locationType: true,
         updatedAt: true,
       },
     });
@@ -78,7 +77,6 @@ export class ListingControllerBase {
       select: {
         createdAt: true,
         id: true,
-        locationType: true,
         updatedAt: true,
       },
     });
@@ -104,7 +102,6 @@ export class ListingControllerBase {
       select: {
         createdAt: true,
         id: true,
-        locationType: true,
         updatedAt: true,
       },
     });
@@ -139,7 +136,6 @@ export class ListingControllerBase {
         select: {
           createdAt: true,
           id: true,
-          locationType: true,
           updatedAt: true,
         },
       });
@@ -173,7 +169,6 @@ export class ListingControllerBase {
         select: {
           createdAt: true,
           id: true,
-          locationType: true,
           updatedAt: true,
         },
       });

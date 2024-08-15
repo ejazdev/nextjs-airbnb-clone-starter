@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Edit, SimpleForm, EditProps, TextInput } from "react-admin";
+import { Edit, SimpleForm, EditProps } from "react-admin";
 
 export const ListingEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <TextInput label="locationType" source="locationType" />
+        <div />
       </SimpleForm>
     </Edit>
   );

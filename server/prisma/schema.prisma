@@ -20,8 +20,7 @@ model User {
 }
 
 model Listing {
-  createdAt    DateTime @default(now())
-  id           String   @id @default(cuid())
-  locationType String
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
 }

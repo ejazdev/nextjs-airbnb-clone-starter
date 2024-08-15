@@ -18,13 +18,10 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Listing } from "./Listing";
 import { ListingCountArgs } from "./ListingCountArgs";
 import { ListingFindManyArgs } from "./ListingFindManyArgs";
 import { ListingFindUniqueArgs } from "./ListingFindUniqueArgs";
-import { CreateListingArgs } from "./CreateListingArgs";
-import { UpdateListingArgs } from "./UpdateListingArgs";
 import { DeleteListingArgs } from "./DeleteListingArgs";
 import { ListingService } from "../listing.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -78,47 +75,6 @@ export class ListingResolverBase {
       return null;
     }
     return result;
-  }
-
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => Listing)
-  @nestAccessControl.UseRoles({
-    resource: "Listing",
-    action: "create",
-    possession: "any",
-  })
-  async createListing(
-    @graphql.Args() args: CreateListingArgs
-  ): Promise<Listing> {
-    return await this.service.createListing({
-      ...args,
-      data: args.data,
-    });
-  }
-
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => Listing)
-  @nestAccessControl.UseRoles({
-    resource: "Listing",
-    action: "update",
-    possession: "any",
-  })
-  async updateListing(
-    @graphql.Args() args: UpdateListingArgs
-  ): Promise<Listing | null> {
-    try {
-      return await this.service.updateListing({
-        ...args,
-        data: args.data,
-      });
-    } catch (error) {
-      if (isRecordNotFoundError(error)) {
-        throw new GraphQLError(
-          `No resource was found for ${JSON.stringify(args.where)}`
-        );
-      }
-      throw error;
-    }
   }
 
   @graphql.Mutation(() => Listing)

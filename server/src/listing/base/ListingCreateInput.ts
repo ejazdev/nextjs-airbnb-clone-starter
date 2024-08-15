@@ -9,20 +9,5 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MaxLength } from "class-validator";
-
-@InputType()
-class ListingCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(1000)
-  @Field(() => String)
-  locationType!: string;
-}
-
+class ListingCreateInput {}
 export { ListingCreateInput as ListingCreateInput };
