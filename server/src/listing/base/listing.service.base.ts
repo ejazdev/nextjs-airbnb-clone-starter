@@ -10,7 +10,14 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Listing as PrismaListing } from "@prisma/client";
+
+import {
+  Prisma,
+  Listing as PrismaListing,
+  Trip as PrismaTrip,
+  Wishlist as PrismaWishlist,
+  User as PrismaUser,
+} from "@prisma/client";
 
 export class ListingServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -35,5 +42,35 @@ export class ListingServiceBase {
   }
   async deleteListing(args: Prisma.ListingDeleteArgs): Promise<PrismaListing> {
     return this.prisma.listing.delete(args);
+  }
+
+  async findTrips(
+    parentId: string,
+    args: Prisma.TripFindManyArgs
+  ): Promise<PrismaTrip[]> {
+    return this.prisma.listing
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .trips(args);
+  }
+
+  async findWishlists(
+    parentId: string,
+    args: Prisma.WishlistFindManyArgs
+  ): Promise<PrismaWishlist[]> {
+    return this.prisma.listing
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .wishlists(args);
+  }
+
+  async getListingCreatedBy(parentId: string): Promise<PrismaUser | null> {
+    return this.prisma.listing
+      .findUnique({
+        where: { id: parentId },
+      })
+      .listingCreatedBy();
   }
 }

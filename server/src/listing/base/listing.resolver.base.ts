@@ -18,11 +18,19 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Listing } from "./Listing";
 import { ListingCountArgs } from "./ListingCountArgs";
 import { ListingFindManyArgs } from "./ListingFindManyArgs";
 import { ListingFindUniqueArgs } from "./ListingFindUniqueArgs";
+import { CreateListingArgs } from "./CreateListingArgs";
+import { UpdateListingArgs } from "./UpdateListingArgs";
 import { DeleteListingArgs } from "./DeleteListingArgs";
+import { TripFindManyArgs } from "../../trip/base/TripFindManyArgs";
+import { Trip } from "../../trip/base/Trip";
+import { WishlistFindManyArgs } from "../../wishlist/base/WishlistFindManyArgs";
+import { Wishlist } from "../../wishlist/base/Wishlist";
+import { User } from "../../user/base/User";
 import { ListingService } from "../listing.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Listing)
@@ -77,6 +85,59 @@ export class ListingResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Listing)
+  @nestAccessControl.UseRoles({
+    resource: "Listing",
+    action: "create",
+    possession: "any",
+  })
+  async createListing(
+    @graphql.Args() args: CreateListingArgs
+  ): Promise<Listing> {
+    return await this.service.createListing({
+      ...args,
+      data: {
+        ...args.data,
+
+        listingCreatedBy: {
+          connect: args.data.listingCreatedBy,
+        },
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Listing)
+  @nestAccessControl.UseRoles({
+    resource: "Listing",
+    action: "update",
+    possession: "any",
+  })
+  async updateListing(
+    @graphql.Args() args: UpdateListingArgs
+  ): Promise<Listing | null> {
+    try {
+      return await this.service.updateListing({
+        ...args,
+        data: {
+          ...args.data,
+
+          listingCreatedBy: {
+            connect: args.data.listingCreatedBy,
+          },
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
   @graphql.Mutation(() => Listing)
   @nestAccessControl.UseRoles({
     resource: "Listing",
@@ -96,5 +157,66 @@ export class ListingResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Trip], { name: "trips" })
+  @nestAccessControl.UseRoles({
+    resource: "Trip",
+    action: "read",
+    possession: "any",
+  })
+  async findTrips(
+    @graphql.Parent() parent: Listing,
+    @graphql.Args() args: TripFindManyArgs
+  ): Promise<Trip[]> {
+    const results = await this.service.findTrips(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Wishlist], { name: "wishlists" })
+  @nestAccessControl.UseRoles({
+    resource: "Wishlist",
+    action: "read",
+    possession: "any",
+  })
+  async findWishlists(
+    @graphql.Parent() parent: Listing,
+    @graphql.Args() args: WishlistFindManyArgs
+  ): Promise<Wishlist[]> {
+    const results = await this.service.findWishlists(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "listingCreatedBy",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getListingCreatedBy(
+    @graphql.Parent() parent: Listing
+  ): Promise<User | null> {
+    const result = await this.service.getListingCreatedBy(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }
